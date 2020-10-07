@@ -7,7 +7,7 @@ open class NetStream: NSObject {
     private static let queueValue = UnsafeMutableRawPointer.allocate(byteCount: 1, alignment: 1)
 
     public let lockQueue: DispatchQueue = {
-        let queue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
+        let queue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock", qos: .userInitiated)
         queue.setSpecific(key: queueKey, value: queueValue)
         return queue
     }()
