@@ -643,8 +643,8 @@ extension RTMPStream: AVMixerDelegate {
 extension RTMPStream {
     public func stopAudioMuxAndEncode() {
         lockQueue.async {
-            mixer.audioIO.encoder.delegate = nil
-            mixer.audioIO.encoder.stopRunning()
+            self.mixer.audioIO.encoder.delegate = nil
+            self.mixer.audioIO.encoder.stopRunning()
         }
     }
 }
