@@ -638,3 +638,11 @@ extension RTMPStream: AVMixerDelegate {
         delegate?.rtmpStream(self, didOutput: buffer, presentationTimeStamp: presentationTimeStamp)
     }
 }
+
+// My custom extensions
+extension RTMPStream {
+    func stopAudioMuxAndEncode() {
+        mixer.audioIO.encoder.delegate = nil
+        mixer.audioIO.encoder.stopRunning()
+    }
+}
