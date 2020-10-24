@@ -262,9 +262,9 @@ open class RTMPStream: NetStream {
                 #if os(iOS)
                     mixer.videoIO.screen?.stopRunning()
                 #endif
-                mixer.audioIO.encoder.delegate = nil
+                // mixer.audioIO.encoder.delegate = nil
                 mixer.videoIO.encoder.delegate = nil
-                mixer.audioIO.encoder.stopRunning()
+                // mixer.audioIO.encoder.stopRunning()
                 mixer.videoIO.encoder.stopRunning()
                 sampler?.stopRunning()
                 // mixer.recorder.stopRunning()
