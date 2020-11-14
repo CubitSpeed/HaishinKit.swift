@@ -239,7 +239,7 @@ open class RTMPStream: NetStream {
             lockQueue.async {
                 switch self.readyState {
                 case .publish, .publishing:
-                    self.mixer.audioIO.encoder.muted = self.paused
+                    // self.mixer.audioIO.encoder.muted = self.paused
                     self.mixer.videoIO.encoder.muted = self.paused
                 default:
                     break
@@ -295,7 +295,7 @@ open class RTMPStream: NetStream {
                 audioWasSent = false
             case .publishing:
                 send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
-                mixer.audioIO.encoder.startRunning()
+                // mixer.audioIO.encoder.startRunning()
                 mixer.videoIO.encoder.startRunning()
                 sampler?.startRunning()
                 if howToPublish == .localRecord {
@@ -641,6 +641,12 @@ extension RTMPStream: AVMixerDelegate {
 
 // My custom extensions
 extension RTMPStream {
+    public func startAudioEncode() {
+        lockQueue.async {
+            self.mixer.audioIO.encoder.startRunning()
+        }
+    }
+
     public func stopAudioMuxAndEncode() {
         lockQueue.async {
             self.mixer.audioIO.encoder.delegate = nil
