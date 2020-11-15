@@ -298,10 +298,12 @@ open class RTMPStream: NetStream {
                 audioWasSent = false
             case .publishing:
                 send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
-                if !self.isAudioEncoderRunning.value {
-                    mixer.audioIO.encoder.startRunning()
-                    self.isAudioEncoderRunning.mutate { $0 = true }
-                }
+                mixer.audioIO.encoder.stopRunning()
+                mixer.audioIO.encoder.startRunning()
+                // if !self.isAudioEncoderRunning.value {
+                    
+                //     self.isAudioEncoderRunning.mutate { $0 = true }
+                // }
                 mixer.videoIO.encoder.startRunning()
                 sampler?.startRunning()
                 if howToPublish == .localRecord {
@@ -649,11 +651,12 @@ extension RTMPStream: AVMixerDelegate {
 extension RTMPStream {
     public func stopAudioMuxAndEncode() {
         lockQueue.async {
-            if self.isAudioEncoderRunning.value {
-                self.mixer.audioIO.encoder.delegate = nil
-                self.mixer.audioIO.encoder.stopRunning()
-                self.isAudioEncoderRunning.mutate { $0 = false }
-            }
+            self.mixer.audioIO.encoder.stopRunning()
+            // if self.isAudioEncoderRunning.value {
+            //     self.mixer.audioIO.encoder.delegate = nil
+            //     self.mixer.audioIO.encoder.stopRunning()
+            //     self.isAudioEncoderRunning.mutate { $0 = false }
+            // }
         }
     }
 }
