@@ -4,8 +4,6 @@ import AVFoundation
  flash.net.NetStream for Swift
  */
 open class RTMPStream: NetStream {
-    private var isAudioEncoderRunning: Atomic<Bool> = .init(false)
-
     /**
      NetStatusEvent#info.code for NetStream
      */
@@ -300,10 +298,6 @@ open class RTMPStream: NetStream {
                 send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
                 mixer.audioIO.encoder.stopRunning()
                 mixer.audioIO.encoder.startRunning()
-                // if !self.isAudioEncoderRunning.value {
-                    
-                //     self.isAudioEncoderRunning.mutate { $0 = true }
-                // }
                 mixer.videoIO.encoder.startRunning()
                 sampler?.startRunning()
                 if howToPublish == .localRecord {
@@ -652,11 +646,6 @@ extension RTMPStream {
     public func stopAudioMuxAndEncode() {
         lockQueue.async {
             self.mixer.audioIO.encoder.stopRunning()
-            // if self.isAudioEncoderRunning.value {
-            //     self.mixer.audioIO.encoder.delegate = nil
-            //     self.mixer.audioIO.encoder.stopRunning()
-            //     self.isAudioEncoderRunning.mutate { $0 = false }
-            // }
         }
     }
 }
