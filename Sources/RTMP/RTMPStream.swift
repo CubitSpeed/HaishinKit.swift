@@ -289,6 +289,7 @@ open class RTMPStream: NetStream {
                 #if os(iOS)
                     mixer.videoIO.screen?.startRunning()
                 #endif
+                mixer.audioIO.encoder.delegate = nil
                 mixer.audioIO.encoder.delegate = muxer
                 mixer.videoIO.encoder.delegate = muxer
                 sampler?.delegate = muxer
