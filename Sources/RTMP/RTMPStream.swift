@@ -4,6 +4,8 @@ import AVFoundation
  flash.net.NetStream for Swift
  */
 open class RTMPStream: NetStream {
+    private var isAudioEncoderRunning: Atomic<Bool> = .init(false)
+
     /**
      NetStatusEvent#info.code for NetStream
      */
@@ -239,7 +241,7 @@ open class RTMPStream: NetStream {
             lockQueue.async {
                 switch self.readyState {
                 case .publish, .publishing:
-                    // self.mixer.audioIO.encoder.muted = self.paused
+                    self.mixer.audioIO.encoder.muted = self.paused
                     self.mixer.videoIO.encoder.muted = self.paused
                 default:
                     break
@@ -295,7 +297,10 @@ open class RTMPStream: NetStream {
                 audioWasSent = false
             case .publishing:
                 send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
-                // mixer.audioIO.encoder.startRunning()
+                if !self.isAudioEncoderRunning.value {
+                    mixer.audioIO.encoder.startRunning()
+                    self.isAudioEncoderRunning.mutate { $0 = true }
+                }
                 mixer.videoIO.encoder.startRunning()
                 sampler?.startRunning()
                 if howToPublish == .localRecord {
@@ -641,16 +646,13 @@ extension RTMPStream: AVMixerDelegate {
 
 // My custom extensions
 extension RTMPStream {
-    public func startAudioEncode() {
-        lockQueue.async {
-            self.mixer.audioIO.encoder.startRunning()
-        }
-    }
-
     public func stopAudioMuxAndEncode() {
         lockQueue.async {
-            self.mixer.audioIO.encoder.delegate = nil
-            self.mixer.audioIO.encoder.stopRunning()
+            if self.isAudioEncoderRunning.value {
+                self.mixer.audioIO.encoder.delegate = nil
+                self.mixer.audioIO.encoder.stopRunning()
+                self.isAudioEncoderRunning.mutate { $0 = false }
+            }
         }
     }
 }
