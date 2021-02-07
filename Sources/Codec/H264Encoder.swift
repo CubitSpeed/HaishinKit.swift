@@ -6,6 +6,11 @@ import VideoToolbox
 import UIKit
 #endif
 
+func bitsToBytes(_ bits: Int) -> Int {
+    let bitsToBytes: Double = 8.0;
+    return Int(Double(defaultBitrate) / bitsToBytes)
+}
+
 public protocol VideoEncoderDelegate: class {
     func didSetFormatDescription(video formatDescription: CMFormatDescription?)
     func sampleOutput(video sampleBuffer: CMSampleBuffer)
@@ -52,6 +57,7 @@ public final class H264Encoder {
     public static let defaultWidth: Int32 = 480
     public static let defaultHeight: Int32 = 272
     public static let defaultBitrate: UInt32 = 160 * 1000
+    static let defaultDataRateLimits:[Int] = [bitsToBytes(defaultBitrate), 1]
     public static let defaultScalingMode: ScalingMode = .trim
 
     #if os(iOS)
@@ -109,12 +115,22 @@ public final class H264Encoder {
         }
     }
     #endif
+    var dataRateLimits:[Int] = H264Encoder.defaultDataRateLimits {
+        didSet {
+            guard dataRateLimits != oldValue else {
+                return
+            }
+            invalidateSession = true
+            setProperty(kVTCompressionPropertyKey_DataRateLimits, self.dataRateLimits as CFTypeRef)
+        }
+    }
     var bitrate: UInt32 = H264Encoder.defaultBitrate {
         didSet {
             guard bitrate != oldValue else {
                 return
             }
             setProperty(kVTCompressionPropertyKey_AverageBitRate, Int(bitrate) as CFTypeRef)
+            dataRateLimits = [bitsToBytes(bit), 1]
         }
     }
     var profileLevel: String = kVTProfileLevel_H264_Baseline_3_1 as String {
@@ -169,6 +185,7 @@ public final class H264Encoder {
         var properties: [NSString: NSObject] = [
             kVTCompressionPropertyKey_RealTime: kCFBooleanTrue,
             kVTCompressionPropertyKey_ProfileLevel: profileLevel as NSObject,
+            kVTCompressionPropertyKey_DataRateLimits: dataRateLimits as NSObject,
             kVTCompressionPropertyKey_AverageBitRate: Int(bitrate) as NSObject,
             kVTCompressionPropertyKey_ExpectedFrameRate: NSNumber(value: expectedFPS),
             kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration: NSNumber(value: maxKeyFrameIntervalDuration),
