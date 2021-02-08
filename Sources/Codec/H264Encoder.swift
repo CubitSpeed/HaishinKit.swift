@@ -8,7 +8,7 @@ import UIKit
 
 func bitsToBytes(_ bits: Int) -> Int {
     let bitsToBytes: Double = 8.0;
-    return Int(Double(defaultBitrate) / bitsToBytes)
+    return Int(Double(bits) / bitsToBytes)
 }
 
 public protocol VideoEncoderDelegate: class {
@@ -57,7 +57,7 @@ public final class H264Encoder {
     public static let defaultWidth: Int32 = 480
     public static let defaultHeight: Int32 = 272
     public static let defaultBitrate: UInt32 = 160 * 1000
-    static let defaultDataRateLimits:[Int] = [bitsToBytes(defaultBitrate), 1]
+    static let defaultDataRateLimits:[Int] = [bitsToBytes(Int(defaultBitrate)), 1]
     public static let defaultScalingMode: ScalingMode = .trim
 
     #if os(iOS)
@@ -130,7 +130,7 @@ public final class H264Encoder {
                 return
             }
             setProperty(kVTCompressionPropertyKey_AverageBitRate, Int(bitrate) as CFTypeRef)
-            dataRateLimits = [bitsToBytes(bit), 1]
+            dataRateLimits = [bitsToBytes(Int(bitrate)), 1]
         }
     }
     var profileLevel: String = kVTProfileLevel_H264_Baseline_3_1 as String {
