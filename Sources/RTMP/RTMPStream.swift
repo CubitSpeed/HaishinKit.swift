@@ -262,9 +262,9 @@ open class RTMPStream: NetStream {
                 #if os(iOS)
                     mixer.videoIO.screen?.stopRunning()
                 #endif
-                // mixer.audioIO.encoder.delegate = nil
+                mixer.audioIO.encoder.delegate = nil
                 mixer.videoIO.encoder.delegate = nil
-                // mixer.audioIO.encoder.stopRunning()
+                mixer.audioIO.encoder.stopRunning()
                 mixer.videoIO.encoder.stopRunning()
                 sampler?.stopRunning()
                 // mixer.recorder.stopRunning()
@@ -287,7 +287,6 @@ open class RTMPStream: NetStream {
                 #if os(iOS)
                     mixer.videoIO.screen?.startRunning()
                 #endif
-                mixer.audioIO.encoder.delegate = nil
                 mixer.audioIO.encoder.delegate = muxer
                 mixer.videoIO.encoder.delegate = muxer
                 sampler?.delegate = muxer
@@ -296,7 +295,6 @@ open class RTMPStream: NetStream {
                 audioWasSent = false
             case .publishing:
                 send(handlerName: "@setDataFrame", arguments: "onMetaData", createMetaData())
-                mixer.audioIO.encoder.stopRunning()
                 mixer.audioIO.encoder.startRunning()
                 mixer.videoIO.encoder.startRunning()
                 sampler?.startRunning()
@@ -638,14 +636,5 @@ extension RTMPStream: AVMixerDelegate {
 
     func didOutputAudio(_ buffer: AVAudioPCMBuffer, presentationTimeStamp: CMTime) {
         delegate?.rtmpStream(self, didOutput: buffer, presentationTimeStamp: presentationTimeStamp)
-    }
-}
-
-// My custom extensions
-extension RTMPStream {
-    public func stopAudioMuxAndEncode() {
-        lockQueue.async {
-            self.mixer.audioIO.encoder.stopRunning()
-        }
     }
 }
