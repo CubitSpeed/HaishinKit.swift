@@ -307,11 +307,18 @@ final class VideoIOComponent: IOComponent {
             return
         }
 
+        let wasRecorderRunning = mixer.recorder.isRunning.value
+        if wasRecorderRunning {
+            mixer.recorder.stopRunning()
+        }
         mixer.session.beginConfiguration()
         defer {
             mixer.session.commitConfiguration()
             if torch {
                 setTorchMode(.on)
+            }
+            if wasRecorderRunning {
+                mixer.recorder.startRunning()
             }
         }
 
