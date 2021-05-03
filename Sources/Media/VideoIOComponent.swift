@@ -307,7 +307,7 @@ final class VideoIOComponent: IOComponent {
             return
         }
 
-        let shouldRestartLocalRecording = mixer.recorder.isRunning.value userInitiated
+        let shouldRestartLocalRecording = mixer.recorder.isRunning.value && userInitiated
         if shouldRestartLocalRecording {
             mixer.recorder.stopRunning()
         }
