@@ -302,7 +302,7 @@ final class VideoIOComponent: IOComponent {
     }
 
     #if os(iOS) || os(macOS)
-    func attachCamera(_ camera: AVCaptureDevice?) throws {
+    func attachCamera(_ camera: AVCaptureDevice?, userInitiated: Bool = false) throws {
         guard let mixer: AVMixer = mixer else {
             return
         }

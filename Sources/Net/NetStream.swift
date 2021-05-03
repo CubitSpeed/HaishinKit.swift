@@ -64,10 +64,10 @@ open class NetStream: NSObject {
     }
 
 #if os(iOS) || os(macOS)
-    open func attachCamera(_ camera: AVCaptureDevice?, onError: ((_ error: NSError) -> Void)? = nil) {
+    open func attachCamera(_ camera: AVCaptureDevice?, onError: ((_ error: NSError) -> Void)? = nil, userInitiated: Bool = false) {
         lockQueue.async {
             do {
-                try self.mixer.videoIO.attachCamera(camera)
+                try self.mixer.videoIO.attachCamera(camera, userInitiated: userInitiated)
             } catch let error as NSError {
                 onError?(error)
             }
