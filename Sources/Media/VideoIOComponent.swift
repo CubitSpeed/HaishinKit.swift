@@ -307,8 +307,8 @@ final class VideoIOComponent: IOComponent {
             return
         }
 
-        let wasRecorderRunning = mixer.recorder.isRunning.value
-        if wasRecorderRunning {
+        let shouldRestartLocalRecording = mixer.recorder.isRunning.value userInitiated
+        if shouldRestartLocalRecording {
             mixer.recorder.stopRunning()
         }
         mixer.session.beginConfiguration()
@@ -317,7 +317,7 @@ final class VideoIOComponent: IOComponent {
             if torch {
                 setTorchMode(.on)
             }
-            if wasRecorderRunning {
+            if shouldRestartLocalRecording {
                 mixer.recorder.startRunning()
             }
         }
