@@ -32,6 +32,7 @@ open class AVRecorder: NSObject {
     open var writerInputs: [AVMediaType: AVAssetWriterInput] = [:]
     open var outputSettings: [AVMediaType: [String: Any]] = AVRecorder.defaultOutputSettings
     open var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
+    open var isPaused: Atomic<Bool> = .init(false)
     public let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AVRecorder.lock")
     public private(set) var isRunning: Atomic<Bool> = .init(false)
     fileprivate(set) var sourceTime = CMTime.zero
@@ -45,7 +46,7 @@ open class AVRecorder: NSObject {
 
     final func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, mediaType: AVMediaType) {
         lockQueue.async {
-            guard let delegate: AVRecorderDelegate = self.delegate, self.isRunning.value else {
+            guard let delegate: AVRecorderDelegate = self.delegate, self.isRunning.value && !self.isPaused else {
                 return
             }
 
@@ -74,7 +75,7 @@ open class AVRecorder: NSObject {
 
     final func appendPixelBuffer(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
         lockQueue.async {
-            guard let delegate: AVRecorderDelegate = self.delegate, self.isRunning.value else {
+            guard let delegate: AVRecorderDelegate = self.delegate, self.isRunning.value && !self.isPaused else {
                 return
             }
 
